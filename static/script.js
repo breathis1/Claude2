@@ -6,15 +6,23 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove("show"), 2500);
 }
 
-function toggleSave(btn, url, name, platform, members, type, description) {
+function handleSave(btn) {
   const isSaved = btn.classList.contains("saved");
   const endpoint = isSaved ? "/unsave" : "/save";
-  const label = isSaved ? "Save" : "Saved";
-
+  const payload = {
+    url: btn.dataset.url,
+    name: btn.dataset.name,
+    platform: btn.dataset.platform,
+    members: parseInt(btn.dataset.members) || 0,
+    active_users: 0,
+    type: btn.dataset.type,
+    description: btn.dataset.desc,
+    title: btn.dataset.name
+  };
   fetch(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ url, name, platform, members, active_users: 0, type, description, title: name })
+    body: JSON.stringify(payload)
   })
   .then(r => r.json())
   .then(() => {

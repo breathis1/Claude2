@@ -182,7 +182,7 @@ nav a.active{background:white;color:var(--pink)}
 """
 
 files["static/script.js"] = """function showToast(msg){const t=document.getElementById("toast");if(!t)return;t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2500)}
-function toggleSave(btn,url,name,platform,members,type,description){const isSaved=btn.classList.contains("saved");fetch(isSaved?"/unsave":"/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url,name,platform,members,active_users:0,type,description,title:name})}).then(r=>r.json()).then(()=>{btn.classList.toggle("saved");btn.textContent=isSaved?"Save":"Saved";showToast(isSaved?"Removed from saved":"Saved!")})}
+function handleSave(btn){const isSaved=btn.classList.contains("saved");const payload={url:btn.dataset.url,name:btn.dataset.name,platform:btn.dataset.platform,members:parseInt(btn.dataset.members)||0,active_users:0,type:btn.dataset.type,description:btn.dataset.desc,title:btn.dataset.name};fetch(isSaved?"/unsave":"/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}).then(r=>r.json()).then(()=>{btn.classList.toggle("saved");btn.textContent=isSaved?"Save":"Saved";showToast(isSaved?"Removed from saved":"Saved!")})}
 function saveNotes(url,textarea){fetch("/notes",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url,notes:textarea.value})}).then(()=>showToast("Notes saved!"))}
 function removeSaved(btn,url){fetch("/unsave",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url})}).then(()=>{const card=btn.closest(".card");card.style.transition="opacity 0.3s";card.style.opacity="0";setTimeout(()=>{card.remove();showToast("Removed!")},300)})}
 """
@@ -236,7 +236,14 @@ files["templates/results.html"] = """<!DOCTYPE html>
     </div>
   </div>
   <div class="card-actions">
-    <button class="btn-save {{ 'saved' if r.saved else '' }}" onclick="toggleSave(this,'{{ r.url }}','{{ r.name | replace(\\"'\\", \\"\\\\'\\")|e }}','{{ r.platform }}',{{ r.members }},'{{ r.type }}','{{ (r.description or '') | replace(\\"'\\", \\"\\\\'\\")|truncate(100)|e }}')">{{ "Saved" if r.saved else "Save" }}</button>
+    <button class="btn-save {{ 'saved' if r.saved else '' }}"
+      data-url="{{ r.url | e }}"
+      data-name="{{ r.name | e }}"
+      data-platform="{{ r.platform }}"
+      data-members="{{ r.members }}"
+      data-type="{{ r.type }}"
+      data-desc="{{ (r.description or '') | truncate(100) | e }}"
+      onclick="handleSave(this)">{{ "Saved" if r.saved else "Save" }}</button>
     <a href="{{ r.url }}" target="_blank" class="btn-visit">Visit →</a>
   </div>
 </div>
