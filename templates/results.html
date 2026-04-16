@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Results for "{{ keyword }}" — Nichify v1</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">Nichify <span>v1</span></a>
+  <div>
+    <a href="/">Search</a>
+    <a href="/saved">Saved</a>
+  </div>
+</nav>
+
+<div class="results-header">
+  <h2>Results for "<strong>{{ keyword }}</strong>"</h2>
+  <span class="count">{{ count }} found</span>
+</div>
+
+<div class="results-grid">
+  {% if results %}
+    {% for r in results %}
+    <div class="card">
+      <div class="card-icon {{ r.platform | lower }}">
+        {% if r.platform == "Reddit" %}🟠{% else %}💬{% endif %}
+      </div>
+      <div class="card-body">
+        <div class="card-title">{{ r.title or r.name }}</div>
+        <div class="card-desc">{{ r.description or "No description available." }}</div>
+        <div class="card-meta">
+          <span class="badge badge-platform">{{ r.platform }}</span>
+          <span class="badge badge-{{ r.type | lower }}">{{ r.type }}</span>
+          {% if r.members > 0 %}
+          <span class="card-stats">
+            👥 {{ "{:,}".format(r.members) }} members
+            {% if r.active_users > 0 %} &nbsp;•&nbsp; ⚡ {{ "{:,}".format(r.active_users) }} active{% endif %}
+          </span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="btn-save {{ 'saved' if r.saved else '' }}"
+          onclick="toggleSave(this,
+            '{{ r.url }}',
+            '{{ r.name | replace("'", "\\'") }}',
+            '{{ r.platform }}',
+            {{ r.members }},
+            '{{ r.type }}',
+            '{{ (r.description or '') | replace("'", "\\'") | truncate(100) }}'
+          )">
+          {{ "Saved" if r.saved else "Save" }}
+        </button>
+        <a href="{{ r.url }}" target="_blank" class="btn-visit">Visit →</a>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty">
+      <div class="icon">🔍</div>
+      <h3>No results found</h3>
+      <p>Try a different keyword or broaden your filters.</p>
+    </div>
+  {% endif %}
+</div>
+
+<div id="toast" class="toast"></div>
+<script src="/static/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saved Communities — Nichify v1</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">Nichify <span>v1</span></a>
+  <div>
+    <a href="/">Search</a>
+    <a href="/saved" class="active">Saved</a>
+  </div>
+</nav>
+
+<div class="page-header">
+  <h1>Saved Communities</h1>
+  {% if saved %}
+  <a href="/export" class="btn-export">Export CSV</a>
+  {% endif %}
+</div>
+
+<div class="results-grid">
+  {% if saved %}
+    {% for r in saved %}
+    <div class="card">
+      <div class="card-icon {{ r.platform | lower }}">
+        {% if r.platform == "Reddit" %}🟠{% else %}💬{% endif %}
+      </div>
+      <div class="card-body">
+        <div class="card-title">{{ r.title or r.name }}</div>
+        <div class="card-desc">{{ r.description or "No description available." }}</div>
+        <div class="card-meta">
+          <span class="badge badge-platform">{{ r.platform }}</span>
+          <span class="badge badge-{{ r.type | lower }}">{{ r.type }}</span>
+          {% if r.members > 0 %}
+          <span class="card-stats">👥 {{ "{:,}".format(r.members) }} members</span>
+          {% endif %}
+        </div>
+        <textarea class="notes-input" rows="2"
+          placeholder="Add notes about this community..."
+          onblur="saveNotes('{{ r.url }}', this)">{{ r.notes or "" }}</textarea>
+        <div class="saved-date">Saved on {{ r.saved_at or "—" }}</div>
+      </div>
+      <div class="card-actions">
+        <button class="btn-remove" onclick="removeSaved(this, '{{ r.url }}')">Remove</button>
+        <a href="{{ r.url }}" target="_blank" class="btn-visit">Visit →</a>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty">
+      <div class="icon">📌</div>
+      <h3>No saved communities yet</h3>
+      <p>Search for a niche and save communities you want to track.</p>
+      <br>
+      <a href="/" class="btn-pink" style="display:inline-block; padding: 10px 24px; border-radius:10px; text-decoration:none;">Start Searching</a>
+    </div>
+  {% endif %}
+</div>
+
+<div id="toast" class="toast"></div>
+<script src="/static/script.js"></script>
+</body>
+</html>

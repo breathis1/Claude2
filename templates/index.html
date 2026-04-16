@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nichify v1 — Niche Audience Finder</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">Nichify <span>v1</span></a>
+  <div>
+    <a href="/" class="active">Search</a>
+    <a href="/saved">Saved</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Find Your <span>Niche Audience</span></h1>
+  <p>Discover Reddit communities & forums in any niche. Save, export, and track the best ones.</p>
+
+  <div class="search-box">
+    <form action="/search" method="get">
+      <div class="search-row">
+        <input type="text" name="q" placeholder="e.g. biohacking, quantum biology, cold therapy..." autofocus
+               value="{{ request.args.get('q', '') }}">
+        <button type="submit" class="btn-pink">Search</button>
+      </div>
+      <div class="filters">
+        <select name="platform">
+          <option value="all">All Platforms</option>
+          <option value="reddit">Reddit Only</option>
+          <option value="forum">Forums Only</option>
+        </select>
+        <select name="min_members">
+          <option value="0">Any Size</option>
+          <option value="1000">1K+ Members</option>
+          <option value="10000">10K+ Members</option>
+          <option value="50000">50K+ Members</option>
+        </select>
+        <select name="activity">
+          <option value="all">Any Activity</option>
+          <option value="active">Active Only</option>
+          <option value="dead">Low Activity</option>
+        </select>
+        <select name="intent">
+          <option value="all">All Intent</option>
+          <option value="Buyers">Buyers</option>
+          <option value="Learners">Learners</option>
+          <option value="Mixed">Mixed</option>
+        </select>
+      </div>
+    </form>
+    {% if error %}
+    <p style="color:red; margin-top:12px; font-size:0.9rem;">{{ error }}</p>
+    {% endif %}
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<script src="/static/script.js"></script>
+</body>
+</html>
