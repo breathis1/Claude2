@@ -1,0 +1,4 @@
+nichify/
+__pycache__/
+*.pyc
+data/
